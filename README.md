@@ -59,6 +59,12 @@ Notes
 The program scales quadratically with respect to the number of SVs in the,
 since the distance between each pair of SVs are computed. Thus, with
 
+SVs with at least one breakpoint within the provided telomere and centromere
+boundaries are discarded. Therefore the output may have fewer SVs than the
+input. This feature was originally created to ensure that the output from this
+script are compatible with downstream analysis scripts in the PCAWG-6 SV
+mechanisms project...
+
 The algorithm behind this script is described in the PCAWG-6 SV mechanisms
 manuscript. 
 
@@ -68,6 +74,9 @@ Issues
 Currently this script is hard-coded to only work with human reference version
 hg19. It might be possible to adapt to GRCh38 by changing the chromosome length
 and telomere/centromere coordinates files. 
+
+I will try to refactor the code to accept custom chromosome size or telomere
+and centromere coordinate files as inputs to the code. 
 
 
 Citation
