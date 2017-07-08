@@ -59,8 +59,8 @@ bkpt_proximity_p_value = function(index_bkpt, chr_size, score_cutoff) {
     min_coord = max(1, index_bkpt - distance_cutoff)
     max_coord = min(chr_size, index_bkpt + distance_cutoff)
     if (min_coord >= max_coord) {
-        print(min_coord)
-        print(max_coord)
+        # print(min_coord)
+        # print(max_coord)
         stop(sprintf("Failed with index_bkpt=%s; chr_size=%s; score_cutoff=%s", index_bkpt, chr_size, score_cutoff))
     } else {
         return((max_coord-min_coord)/chr_size)
@@ -394,9 +394,9 @@ intra_vs_single_intra_p_value = function(il, ih, score_cutoff, s, chr_size) {
     good_regions_start = good_regions_start[!bad_idx]
     good_regions_end   = good_regions_end[!bad_idx]
     if (any(good_regions_end < good_regions_start)) {
-        print(good_regions_start)
-        print(good_regions_end)
-        print(which(good_regions_end < good_regions_start))
+        # print(good_regions_start)
+        # print(good_regions_end)
+        # print(which(good_regions_end < good_regions_start))
         stop(sprintf("Failed after removing out of bounds regions: il=%s; ih=%s; score_cutoff=%s; s=%s; chr_size=%s", il, ih, score_cutoff, s, chr_size))
     }
 
@@ -421,12 +421,12 @@ intra_vs_single_intra_p_value = function(il, ih, score_cutoff, s, chr_size) {
 
     out = sum(pmin(good_regions_end, chr_size) - pmax(1, good_regions_start) + 1) / chr_size
     if (out > 1 || out < 0) {
-        print(good_regions_start)
-        print(good_regions_end)
-        print(good_regions_end - good_regions_start + 1)
-        print(sum(good_regions_end - good_regions_start + 1))
-        print(chr_size)
-        print(sum(good_regions_end - good_regions_start + 1) > chr_size)
+        # print(good_regions_start)
+        # print(good_regions_end)
+        # print(good_regions_end - good_regions_start + 1)
+        # print(sum(good_regions_end - good_regions_start + 1))
+        # print(chr_size)
+        # print(sum(good_regions_end - good_regions_start + 1) > chr_size)
         stop(sprintf("Failed after summing regions: out=%s; il=%s; ih=%s; score_cutoff=%s; s=%s; chr_size=%s", out, il, ih, score_cutoff, s, chr_size))
     }
 
@@ -503,10 +503,6 @@ get_clust_mat = function(d, is_already_clustered = rep(F, nrow(d))) {
         "inv" = setNames(bkpt_h-bkpt_l, d[,7])[is_inv & !is_already_clustered]
     )
 
-    # m = sapply(
-    #     1:nrow(d),
-    #     function(i) sapply(
-
     # Replaced above with the multithreaded version
     m = foreach(i = 1:nrow(d), .combine = cbind) %dopar% {
         sapply(
@@ -571,9 +567,7 @@ get_clust_mat = function(d, is_already_clustered = rep(F, nrow(d))) {
         )
     }
     
-    # )  # This bit belonged to the sapply(
-
-    m
+    return(m)
 }
 
 
@@ -627,9 +621,8 @@ get_footprints = function(pos, chr, cutoff = 0.01) {
 
     # After computing footprints based on all distances, perform per-chromosome
     # distance tests. 
-    print("HERE")
-    print(dists)
-    print(is_new_footprint)
+    # print(dists)
+    # print(is_new_footprint)
     dists = c(dists, NA)
     is_new_footprint = c(is_new_footprint, NA)
     for (c in unique(chr)) {

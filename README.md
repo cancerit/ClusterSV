@@ -46,6 +46,7 @@ Two files are output:
   * Footprint ID of the high end breakpoint
   * Start and end coordinates of the footprint of the low end breakpoint
   * Start and end coordinates of the footprint of the high end breakpoint
+  * P-value of the last agglomeration step in this cluster
 * `<input_prefix>.sv_distance_pvals` - distance P-values between each pair of
   SVs. Note that this is the raw P-value matrix, where columns correspond to
   anchor SVs (see the PCAWG-6 SV mechanisms manuscript for details). Inside the
