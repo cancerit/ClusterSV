@@ -28,7 +28,7 @@ Usage:
     Rscript clustering_index.R <input.bedpe>
     Rscript clustering_index.R <input.bedpe> <n_threads>
 
-Options:
+Positional arguments:
 
     input.bedpe - input BEDPE file
     n_threads - optional INT for number of threads to use. (default: 1)
