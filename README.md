@@ -85,11 +85,11 @@ Citation
 Coming soon hopefully...
 
 
-LICENCE
+LICENSE
 ========
 Copyright (c) 2014-2017 Genome Research Ltd.
 
-Author: Yilong Li <yl3@sanger.ac.uk>, <liyilong623@gmail.com>
+Author: Yilong Li <yl3.at.sanger.ac.uk>, <liyilong623.at.gmail.com>
 
 ClusterSV is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free
