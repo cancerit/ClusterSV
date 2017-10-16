@@ -2,7 +2,7 @@
 # it is for two rearrangements to have occurred within the observed vicinity
 # from each other. 
 #
-# Usage:
+# Usage: Rscript clustering_index.R
 # 
 
 library(gtools)
@@ -803,7 +803,7 @@ compute_clusters_and_footprints = function(d) {
         clustering_fdr_cutoff = res$fdr_cutoff
 
         # Get the footprint info
-        pos = c(rowMeans[,2:3], rowMeans[,5:6])
+        pos = c(rowMeans(d[,2:3]), rowMeans(d[,5:6]))
         chrs = c(d[,1], d[,4])
         footprint_idx = rep("NA", length(pos))
         footprint_bounds = rep("NA", length(pos))
@@ -908,8 +908,8 @@ if (length(commandArgs(T)) > 0) {
     cat("    clustering_index.R <input.bedpe> <n_threads>\n")
     cat("\n")
     cat("Positional arguments:\n")
-    cat("    input.bedpe - input BEDPE file\n")
-    cat("    n_threads - optional INT for number of threads to use. (default: 1)\n")
+    cat("    input.bedpe - Input BEDPE file - no header line.\n")
+    cat("    n_threads - Optional INT for number of threads to use. (default: 1)\n")
 }
 
 
