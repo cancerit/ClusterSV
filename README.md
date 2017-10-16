@@ -28,7 +28,7 @@ Usage:
     Rscript clustering_index.R <input.bedpe>
     Rscript clustering_index.R <input.bedpe> <n_threads>
 
-Options:
+Positional arguments:
 
     input.bedpe - input BEDPE file
     n_threads - optional INT for number of threads to use. (default: 1)
@@ -85,11 +85,11 @@ Citation
 Coming soon hopefully...
 
 
-LICENCE
+LICENSE
 ========
 Copyright (c) 2014-2017 Genome Research Ltd.
 
-Author: Yilong Li <yl3@sanger.ac.uk>, <liyilong623@gmail.com>
+Author: Yilong Li <yl3.at.sanger.ac.uk>, <liyilong623.at.gmail.com>
 
 ClusterSV is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free
