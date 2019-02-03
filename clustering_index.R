@@ -389,6 +389,10 @@ intra_vs_single_intra_p_value = function(il, ih, score_cutoff, s, chr_size) {
         }
     }
 
+    # Make sure we don't get nasty float comparison issues.
+    good_regions_start = round(good_regions_start)
+    good_regions_end = round(good_regions_end)
+
     # Remove regions that are out of bounds
     bad_idx = good_regions_start > chr_size | good_regions_end < 1
     good_regions_start = good_regions_start[!bad_idx]
