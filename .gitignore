@@ -1,4 +1,5 @@
 # ignore testing file
 
-test_clusterSV/
+test_clusterSV/*
+scripts/*
 *workspace*
