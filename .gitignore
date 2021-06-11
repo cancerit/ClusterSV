@@ -1,3 +1,4 @@
 # ignore testing file
 
 test_clusterSV/
+*workspace*
