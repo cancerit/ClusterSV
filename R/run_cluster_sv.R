@@ -10,7 +10,6 @@ required_params <- list('chr', 'cen_telo', 'out', 'bedpe', 'n')
 default_params <- list(
     chr = 'hg38.chrom_sizes',
     cen_telo = 'hg38_centromere_and_telomere_coords.txt',
-
     n = 1
     );
 
@@ -39,9 +38,9 @@ if (all(names(default_params) %in% required_params)) {
         };
 
     if (is.null(ARGS$out)) {
-        output_dir <- sub('.bedpe$', '', file)
+        output_pre <- sub('.bedpe$', '', file)
     } else {
-        output_dir <- ARGS$out
+        output_pre <- ARGS$out
     }
 } else {
     cat('No input file provided.\n');
@@ -54,7 +53,7 @@ if (all(names(default_params) %in% required_params)) {
     cat('    input.bedpe (-bedpe) - Input BEDPE file, without header line.\n');
     cat('    chrom.sizes (-chr) - tab-delimited file with list of chromosome sizes \n');
     cat('    centromere_telomere_coords (-cen_telo) - tab-delimited file with list of chromosome sizes \n');
-    cat('    outpit.dir (-out) - Optional output directory (default: input file directory) \n');
+    cat('    output.dir (-out) - Optional output directory (default: input file directory) \n');
     cat('    n_threads (-n) - Optional INT for number of threads to use. (default: 1)\n')
 };
 
@@ -92,7 +91,7 @@ out_table = data.frame(
 # Write clusters and footprints info the the clustering matrix
 write.table(
     x = out_table,
-    file = file.path(output_dir, 'sv_clusters_and_footprints.tsv'),
+    file = paste0(output_pre, '.sv_clusters_and_footprints.tsv'),
     row.names = F,
     col.names = F,
     quote = F,
@@ -100,7 +99,7 @@ write.table(
 );
 write.table(
     x = as.data.frame(out_mat),
-    file = file.path(output_dir, 'sv_distance_pvals.tsv'),
+    file = paste0(output_pre, '.sv_distance_pvals'),
     row.names = F,
     col.names = F,
     quote = F,
