@@ -67,6 +67,9 @@ if (file.info(file)$size > 0) {
     out_mat = matrix(NA, nrow = 1)
 };
 
+# Filter for chromosomes present in centromere_telomere_coords file
+d = filter_by_chrom(d, chrom = rownames(centromere_telomere_coords))
+
 res = compute_clusters_and_footprints(d);
 out_mat = res$m;
 clustering_fdr_cutoff = res$clustering_fdr_cutoff;

@@ -29,6 +29,14 @@ get_centromere_telomere_coords <- function(f) {
     return(coords)
 }
 
+####################################################################################################
+# Extra functions by HW to filter out SVs on non primary chromosomes
+####################################################################################################
+primary_chrom = c(1:22, 'X')
+filter_by_chrom = function(df, chrom = primary_chrom) {
+    df.filt <- df[ (df$V1 %in% chrom & df$V4 %in% chrom ),]
+}
+
 # The four P-value computation functions below:
 # 1. Inter-chr vs. inter-chr
 # 2. Inter-chr vs. intra-chr
@@ -685,6 +693,7 @@ get_footprints = function(pos, chr, cutoff = 0.01) {
         idx = which(footprint_idx == k)
         footprint_chr = chr_of_footprint_idx[k]
         footprint_coords_of_idx[k] = paste(range(pos[idx]), collapse = "-")
+        print(footprint_chr)
 
         if (length(idx) == 1) {  # No footprint for singleton SVs
             footprint_bounds_of_idx[k] = paste(pos[idx], pos[idx], sep = "-")
