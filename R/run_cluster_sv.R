@@ -80,7 +80,11 @@ by_ct_last_fdr = sapply(
             NA
         } else {
             temp = out_mat[res$clust_and_fps$clust == idx, res$clust_and_fps$clust == idx]
-            max(c(temp)[c(temp) < clustering_fdr_cutoff], na.rm = T)
+            M = max(c(temp)[c(temp) < clustering_fdr_cutoff], na.rm = T)
+            if (M == -Inf) {
+                M = 0
+            }
+            M
         }
     }
 );

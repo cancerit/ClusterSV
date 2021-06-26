@@ -112,7 +112,7 @@ inter_vs_inter_p_value = function(index_chr_l, index_bkpt_l, index_chr_h, index_
     a = score_cutoff / max_d2 * L^2
     b = chr_sizes[[index_chr_l]] - index_bkpt_l
     area_sum = pmin(b, a) * max_d2
-    if (a < b) { 
+    if (0 <= a & a < b) { 
         area_sum = area_sum + score_cutoff*L*L*(log(b)-log(a))
     }
 
@@ -121,7 +121,7 @@ inter_vs_inter_p_value = function(index_chr_l, index_bkpt_l, index_chr_h, index_
     a = score_cutoff / max_d2 * L^2
     b = chr_sizes[[index_chr_l]] - index_bkpt_l
     area_sum = area_sum + pmin(b, a) * max_d2
-    if (a < b) {
+    if (0 <= a & a < b) {
         area_sum = area_sum + score_cutoff*L*L*(log(b)-log(a))
     }
 
@@ -130,7 +130,7 @@ inter_vs_inter_p_value = function(index_chr_l, index_bkpt_l, index_chr_h, index_
     a = score_cutoff / max_d2 * L^2
     b = index_bkpt_l - 1
     area_sum = area_sum + pmin(a, b) * max_d2
-    if (a < b) { 
+    if (0 <= a & a < b) { 
         area_sum = area_sum + score_cutoff*L*L*(log(b)-log(a))
     }
 
@@ -139,7 +139,7 @@ inter_vs_inter_p_value = function(index_chr_l, index_bkpt_l, index_chr_h, index_
     a = score_cutoff / max_d2 * L^2
     b = index_bkpt_l - 1
     area_sum = area_sum + pmin(a, b) * max_d2
-    if (a < b) {
+    if (0 <= a & a < b) {
         area_sum = area_sum + score_cutoff*L*L*(log(b)-log(a))
     }
 
