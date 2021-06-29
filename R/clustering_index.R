@@ -164,15 +164,18 @@ inter_vs_intra_p_value = function(index_chr, index_bkpt_l, index_bkpt_h, score_c
     max_pos_h = pmin(chr_size, index_bkpt_h + max_dist)
 
     prob_one_end_in_index_chr = 2 * (chr_size/genome_size)
+
+
+    cat(sprintf("cutoff=%s, max_dist=%s, min_pos_l=%s, max_pos_l=%s, min_pos_h=%s, maxpos_h=%s, %s", score_cutoff, max_dist, min_pos_l, max_pos_l, min_pos_h, max_pos_h, prob_one_end_in_index_chr))
     if (min_pos_l <= max_pos_h && min_pos_h <= max_pos_l) {
         out = prob_one_end_in_index_chr * (max(max_pos_l, max_pos_h) - min(min_pos_l, min_pos_h) + 1) / chr_size
     }
     else {
         out = prob_one_end_in_index_chr * (max_pos_l-min_pos_l+1 + max_pos_h-min_pos_h+1) / chr_size
     }
-    
+    cat(sprintf(" inter_vs_intra = %s", out))
     if (out > 1 || out <= 0) {
-        stop(sprintf("Failure at inter_vs_intra_p_value() with index_chr=%s, index_bkpt_l=%s, index_bkpt_h=%s, score_cutoff=%s, chr_sizes=%s, OUT=%s", index_chr, index_bkpt_l, index_bkpt_h, score_cutoff, "chr_sizes", out))
+        stop(sprintf("Failure at inter_vs_intra_p_value() with index_chr=%s, index_bkpt_l=%s, index_bkpt_h=%s, score_cutoff=%s, chr_sizes=%s, OUT=%s", index_chr, index_bkpt_l, index_bkpt_h, score_cutoff, chr_size, out))
     }
     return(out)
 }
