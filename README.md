@@ -24,21 +24,26 @@ work even when the breakpoints are fuzzy.
 Note that the program will crash if the input BEDPE file is empty.
 
 Usage:
+    Rscript run_cluster_sv.R -bedpe <input.bedpe>
+    Rscript run_cluster_sv.R -bedpe <input.bedpe> -chr <chrom.sizes> -cen_telo <centromere_telomere_coords> -out <output.prefix> -n <n.threads>
 
-    Rscript clustering_index.R <input.bedpe>
-    Rscript clustering_index.R <input.bedpe> <n_threads>
-
-Positional arguments:
-
-    input.bedpe - input BEDPE file
-    n_threads - optional INT for number of threads to use. (default: 1)
+Named arguments:
+    input.bedpe (-bedpe) - Input BEDPE file, without header line.
+    chrom.sizes (-chr) - tab-delimited file with list of chromosome sizes. 
+        Default: `./hg38.chrom_sizes`
+    centromere_telomere_coords (-cen_telo) - tab-delimited file with list of chromosome sizes. 
+        Default: `./hg38_centromere_and_telomere_coords.txt`
+    output.prefix (-out) - Prefic for output files. 
+        Default: Input prefix
+    n_threads (-n) - Optional INT for number of threads to use. 
+        Default: 1
 
 
 Output
 ======
 Two files are output:
 
-* `<input_prefix>.sv_clusters_and_footprints` - this file contains the first
+* `<output_prefix>.sv_clusters_and_footprints` - this file contains the first
   ten columns in the input BEDPE file with the following columns appended.
   * Cluster ID of the cluster of each rearrangement junction
   * Number of SVs in the current SV cluster
@@ -47,7 +52,7 @@ Two files are output:
   * Start and end coordinates of the footprint of the low end breakpoint
   * Start and end coordinates of the footprint of the high end breakpoint
   * P-value of the last agglomeration step in this cluster
-* `<input_prefix>.sv_distance_pvals` - distance P-values between each pair of
+* `<output_prefix>.sv_distance_pvals` - distance P-values between each pair of
   SVs. Note that this is the raw P-value matrix, where columns correspond to
   anchor SVs (see the PCAWG-6 SV mechanisms manuscript for details). Inside the
   algorithm, the pairwise distances used for hierarchical clustering of SVs are
@@ -70,16 +75,6 @@ The algorithm behind this script is described in the PCAWG-6 SV mechanisms
 manuscript. 
 
 
-Issues
-======
-Currently this script is hard-coded to only work with human reference version
-hg19. It might be possible to adapt to GRCh38 by changing the chromosome length
-and telomere/centromere coordinates files. 
-
-I will try to refactor the code to accept custom chromosome size or telomere
-and centromere coordinate files as inputs to the code. 
-
-
 Citation
 ========
 Coming soon hopefully...
@@ -90,6 +85,7 @@ LICENSE
 Copyright (c) 2014-2017 Genome Research Ltd.
 
 Author: Yilong Li <yl3.at.sanger.ac.uk>, <liyilong623.at.gmail.com>
+Contributor: Helena Winata <hwinata@mednet.ucla.edu>
 
 ClusterSV is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free

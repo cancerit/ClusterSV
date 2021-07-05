@@ -1,0 +1,7 @@
+# ignore testing file
+
+test_clusterSV/*
+scripts/*
+*workspace*
+
+references/UCSC*

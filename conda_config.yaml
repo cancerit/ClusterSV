@@ -1,0 +1,9 @@
+name: test-clusterSV
+channels:
+  - r
+  - defaults
+  - conda-forge
+dependencies:
+  - r-gtools=3.8.1
+  - r-doparallel=1.0.14
+prefix: /home/hwinata/miniconda3/envs/test-clusterSV

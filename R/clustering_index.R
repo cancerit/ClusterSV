@@ -5,29 +5,37 @@
 # Usage: Rscript clustering_index.R
 # 
 
-library(gtools)
-library(doParallel)
-
-get_chr_sizes = function() {
-    temp = read.table("hg19.chrom_sizes", header = F, sep = "\t")
-    chr_sizes = temp[,2]
-    names(chr_sizes) = temp[,1]
-    chr_sizes
+# Function to read references files 
+get_chr_sizes <- function(f) {
+    temp <- read.table(f, header = F, sep = "\t")
+    chr_sizes <- temp[,2]
+    names(chr_sizes) <- temp[,1]
+    return(chr_sizes)
 }
 
-chr_sizes = get_chr_sizes()
-genome_size = sum(as.numeric(chr_sizes))
-
-centromere_telomere_coords = as.matrix(
-    read.table(
-        "hg19_centromere_and_telomere_coords.txt",
-        header = T,
-        sep = "\t",
-        row.names = 1
+get_centromere_telomere_coords <- function(f) {
+    coords <- as.matrix(
+        read.table(
+            file = f,
+            header = T,
+            sep = "\t",
+            row.names = 1
+        )
     )
-)
-rownames(centromere_telomere_coords) = c(1:22, "X")
-colnames(centromere_telomere_coords) = c("ptel", "cen_start", "cen", "cen_end", "qtel")
+    # do not rename rownames in case input is not in order
+    # user must make sure that bedpe and reference use same naming format for chr numbers
+    # rownames(coords) = c(1:22, "X") # paste0('chr', c(1:22, "X"))
+    colnames(coords) = c("ptel", "cen_start", "cen", "cen_end", "qtel");
+    return(coords)
+}
+
+####################################################################################################
+# Extra functions by HW to filter out SVs on non primary chromosomes
+####################################################################################################
+primary_chrom = c(1:22, 'X')
+filter_by_chrom = function(df, chrom = primary_chrom) {
+    df.filt <- df[ (df$V1 %in% chrom & df$V4 %in% chrom ),]
+}
 
 # The four P-value computation functions below:
 # 1. Inter-chr vs. inter-chr
@@ -104,7 +112,7 @@ inter_vs_inter_p_value = function(index_chr_l, index_bkpt_l, index_chr_h, index_
     a = score_cutoff / max_d2 * L^2
     b = chr_sizes[[index_chr_l]] - index_bkpt_l
     area_sum = pmin(b, a) * max_d2
-    if (a < b) { 
+    if (0 <= a & a < b) { 
         area_sum = area_sum + score_cutoff*L*L*(log(b)-log(a))
     }
 
@@ -113,7 +121,7 @@ inter_vs_inter_p_value = function(index_chr_l, index_bkpt_l, index_chr_h, index_
     a = score_cutoff / max_d2 * L^2
     b = chr_sizes[[index_chr_l]] - index_bkpt_l
     area_sum = area_sum + pmin(b, a) * max_d2
-    if (a < b) {
+    if (0 <= a & a < b) {
         area_sum = area_sum + score_cutoff*L*L*(log(b)-log(a))
     }
 
@@ -122,7 +130,7 @@ inter_vs_inter_p_value = function(index_chr_l, index_bkpt_l, index_chr_h, index_
     a = score_cutoff / max_d2 * L^2
     b = index_bkpt_l - 1
     area_sum = area_sum + pmin(a, b) * max_d2
-    if (a < b) { 
+    if (0 <= a & a < b) { 
         area_sum = area_sum + score_cutoff*L*L*(log(b)-log(a))
     }
 
@@ -131,7 +139,7 @@ inter_vs_inter_p_value = function(index_chr_l, index_bkpt_l, index_chr_h, index_
     a = score_cutoff / max_d2 * L^2
     b = index_bkpt_l - 1
     area_sum = area_sum + pmin(a, b) * max_d2
-    if (a < b) {
+    if (0 <= a & a < b) {
         area_sum = area_sum + score_cutoff*L*L*(log(b)-log(a))
     }
 
@@ -156,15 +164,18 @@ inter_vs_intra_p_value = function(index_chr, index_bkpt_l, index_bkpt_h, score_c
     max_pos_h = pmin(chr_size, index_bkpt_h + max_dist)
 
     prob_one_end_in_index_chr = 2 * (chr_size/genome_size)
+
+
+    cat(sprintf("cutoff=%s, max_dist=%s, min_pos_l=%s, max_pos_l=%s, min_pos_h=%s, maxpos_h=%s, %s", score_cutoff, max_dist, min_pos_l, max_pos_l, min_pos_h, max_pos_h, prob_one_end_in_index_chr))
     if (min_pos_l <= max_pos_h && min_pos_h <= max_pos_l) {
         out = prob_one_end_in_index_chr * (max(max_pos_l, max_pos_h) - min(min_pos_l, min_pos_h) + 1) / chr_size
     }
     else {
         out = prob_one_end_in_index_chr * (max_pos_l-min_pos_l+1 + max_pos_h-min_pos_h+1) / chr_size
     }
-    
+    cat(sprintf(" inter_vs_intra = %s", out))
     if (out > 1 || out <= 0) {
-        stop(sprintf("Failure at inter_vs_intra_p_value() with index_chr=%s, index_bkpt_l=%s, index_bkpt_h=%s, score_cutoff=%s, chr_sizes=%s, OUT=%s", index_chr, index_bkpt_l, index_bkpt_h, score_cutoff, "chr_sizes", out))
+        stop(sprintf("Failure at inter_vs_intra_p_value() with index_chr=%s, index_bkpt_l=%s, index_bkpt_h=%s, score_cutoff=%s, chr_sizes=%s, OUT=%s", index_chr, index_bkpt_l, index_bkpt_h, score_cutoff, chr_size, out))
     }
     return(out)
 }
@@ -685,6 +696,7 @@ get_footprints = function(pos, chr, cutoff = 0.01) {
         idx = which(footprint_idx == k)
         footprint_chr = chr_of_footprint_idx[k]
         footprint_coords_of_idx[k] = paste(range(pos[idx]), collapse = "-")
+        print(footprint_chr)
 
         if (length(idx) == 1) {  # No footprint for singleton SVs
             footprint_bounds_of_idx[k] = paste(pos[idx], pos[idx], sep = "-")
@@ -692,6 +704,7 @@ get_footprints = function(pos, chr, cutoff = 0.01) {
             dists = diff(pos[idx])
             lambda = 1/mean(dists)
             is_first_footprint_of_chr = k == min(footprint_idx[chr_of_footprint_idx[footprint_idx] == footprint_chr])
+            #print(paste0('FOOTPRINT', footprint_chr))
             is_before_centromere = min(pos[idx]) < cen_coord(footprint_chr)
             if (is_first_footprint_of_chr && is_before_centromere) {  # Only the first footprint can start from p-telomere
                 if (pexp(pos[idx][1] - ptel_coord(footprint_chr), lambda, lower.tail = F) <= cutoff) {
@@ -834,86 +847,3 @@ compute_clusters_and_footprints = function(d) {
         m = m
     )
 }
-
-
-#
-# THE MAIN FUNCTIONS
-#
-if (length(commandArgs(T)) > 0) {
-    file = commandArgs(T)[1]
-    body = sub(".+/", "", sub(".bedpe$", "", file))
-    output_file = sprintf("%s.sv_clusters_and_footprints", file)
-
-    if (!file.exists(file)) {
-        stop(sprintf("Input file '%s' does not exist!", file))
-    }
-    else {
-        if (file.info(file)$size > 0) {
-            d = read.table(file, header = F, sep = "\t", stringsAsFactors = F, fill = T, comment = "")
-
-            # Set up number of cores
-            if (length(commandArgs(T)) > 1) {
-                num_cores = as.numeric(commandArgs(T)[2])
-            }
-            else {
-                num_cores = 1
-            }
-            registerDoParallel(cores = num_cores)
-
-            res = compute_clusters_and_footprints(d)
-            out_mat = res$m
-            clustering_fdr_cutoff = res$clustering_fdr_cutoff
-            by_ct_last_fdr = sapply(
-                1:max(res$clust_and_fps$clust),
-                function(idx) {
-                    if (sum(res$clust_and_fps$clust == idx) == 1) {
-                        NA
-                    }
-                    else {
-                        temp = out_mat[res$clust_and_fps$clust == idx, res$clust_and_fps$clust == idx]
-                        max(c(temp)[c(temp) < clustering_fdr_cutoff], na.rm = T)
-                    }
-                }
-            )
-            clustering_fdr = by_ct_last_fdr[res$clust_and_fps$clust]
-            out_table = data.frame(
-                res$clust_and_fps,
-                clustering_fdr
-            )
-        }
-        else {
-            warning("Input file is empty.\n")
-            out_table = data.frame(NULL)
-            out_mat = matrix(NA, nrow = 1)
-        }
-
-        # Write clusters and footprints info the the clustering matrix
-        write.table(
-            out_table,
-            output_file,
-            row.names = F,
-            col.names = F,
-            quote = F,
-            sep = "\t"
-        )
-        write.table(
-            as.data.frame(out_mat),
-            sub("sv_clusters_and_footprints$", "sv_distance_pvals", output_file),
-            row.names = F,
-            col.names = F,
-            quote = F,
-            sep = "\t"
-        )
-    }
-} else {
-    cat("No input file provided.\n")
-    cat("Usage:\n")
-    cat("    clustering_index.R <input.bedpe>\n")
-    cat("    clustering_index.R <input.bedpe> <n_threads>\n")
-    cat("\n")
-    cat("Positional arguments:\n")
-    cat("    input.bedpe - Input BEDPE file - no header line.\n")
-    cat("    n_threads - Optional INT for number of threads to use. (default: 1)\n")
-}
-
-
